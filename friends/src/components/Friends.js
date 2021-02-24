@@ -4,14 +4,14 @@ import { axiosWithAuth } from '../utils/axiosWithAuth';
 
 const initFriendValues = {
     name: '',
-    age: null,
+    age: '',
     email: ''
 }
 
 
 export default function Friends(){
     const [friends, setFriends] = useState([]);
-    const [addFriend, setAddFriend] = useState([false]);
+    const [addFriend, setAddFriend] = useState(false);
     const [newFriend, setNewFriend] = useState(initFriendValues);
 
     useEffect(() => {
@@ -21,9 +21,18 @@ export default function Friends(){
         })
     }, []);
 
-    const submitFriend = () => {
-        
+    const handleChange = e => {
+        setNewFriend({...newFriend, [e.target.name]: e.target.value})
     }
+
+    const submitFriend = e => {
+        e.preventDefault();
+        console.log('submitFriends triggered')
+        axiosWithAuth().post('/api/friends/', newFriend)
+        .then(res => {
+            setFriends(res.data);
+        })
+    };
 
     return(
         <div>
@@ -40,9 +49,22 @@ export default function Friends(){
             }
             {
                 addFriend && <form onSubmit={submitFriend}>
-                    <input></input>
-                    <input></input>
-                    <input></input>
+                    <input
+                    type='text'
+                    name='name'
+                    value={newFriend.name}
+                    onChange={handleChange}></input>
+                    <input
+                    type='text'
+                    name='age'
+                    value={newFriend.age}
+                    onChange={handleChange}></input>
+                    <input
+                    type='email'
+                    name='email'
+                    value={newFriend.email}
+                    onChange={handleChange}></input>
+                    <button>Submit</button>
                 </form>
             }
             <button onClick={() => setAddFriend(true)}>Add New Friend</button>
